@@ -29,7 +29,7 @@ jobs:
       - name: Create GitHub App token
         uses: actions/create-github-app-token@v3
         id: gh-app-token
-        if: ${{ inputs.GH_APP_ID && secrets.GH_APP_PEM_FILE }}
+        if: ${{ inputs.GH_APP_ID != '' }}
         with:
           app-id: ${{ inputs.GH_APP_ID }}
           private-key: ${{ secrets.GH_APP_PEM_FILE }}
