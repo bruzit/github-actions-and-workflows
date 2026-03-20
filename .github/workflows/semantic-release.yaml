@@ -4,6 +4,14 @@ on:
   push:
     branches:
       - main
+  workflow_call:
+    inputs:
+      GH_APP_ID:
+        type: string
+        required: false
+    secrets:
+      GH_APP_PEM_FILE:
+        required: false
 
 concurrency:
   group: release-${{ github.ref }}
@@ -18,9 +26,17 @@ jobs:
       issues: write
       pull-requests: write
     steps:
+      - name: Create GitHub App token
+        uses: actions/create-github-app-token@v3
+        id: gh-app-token
+        if: ${{ inputs.GH_APP_ID && secrets.GH_APP_PEM_FILE }}
+        with:
+          app-id: ${{ inputs.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PEM_FILE }}
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
+          token: ${{ steps.gh-app-token.outputs.token || secrets.GITHUB_TOKEN }}
           fetch-depth: 0 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -37,5 +53,5 @@ jobs:
         run: npm audit signatures
       - name: Run Semantic Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.gh-app-token.outputs.token || secrets.GITHUB_TOKEN }}
         run: npx semantic-release
