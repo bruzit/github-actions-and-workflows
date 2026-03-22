@@ -8,7 +8,7 @@ A collection of GitHub composite actions and reusable workflows
 
 ### Reusable Semantic Release Workflow
 
-Reusable [Semantic Release workflow](.github/workflows/semantic-release.yaml) using the Conventional Commits preset to automate versioning, generates [GitHub releases](https://github.com/bruzit/github-actions-and-workflows/releases), and updates the [CHANGELOG](CHANGELOG.md).
+Reusable [Semantic Release workflow](.github/workflows/semantic-release.yaml) using the Conventional Commits preset to automate versioning, tags with SemVer and major tag, generates [GitHub releases](https://github.com/bruzit/github-actions-and-workflows/releases), and updates the [CHANGELOG](CHANGELOG.md).
 
 ## Usage
 
@@ -28,11 +28,15 @@ on:
 jobs:
   release:
     name: Release
-    uses: bruzit/github-actions-and-workflows/.github/workflows/semantic-release.yaml@v0.2.0
+    uses: bruzit/github-actions-and-workflows/.github/workflows/semantic-release.yaml@v0
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     with:
-      GH_APP_ID: ${{ vars.GH_APP_SEM_REL_ID }}
+      GH_APP_ID: ${{ vars.GH_APP_ID }}
     secrets:
-      GH_APP_PEM_FILE: ${{ secrets.GH_APP_SEM_REL_PEM_FILE }}
+      GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
 ```
 
 To create a GitHub App and a GitHub App Installation:
@@ -87,6 +91,7 @@ plugins:
   - - "@semantic-release/git"
     - assets:
       - CHANGELOG.md
+  - semantic-release-major-tag
 ```
 
 ## Copyright and Licensing
