@@ -49,6 +49,7 @@ jobs:
           conventional-changelog-conventionalcommits
           @semantic-release/changelog
           @semantic-release/git
+          semantic-release-major-tag
       - name: Verify Semantic Release
         run: npm audit signatures
       - name: Run Semantic Release
