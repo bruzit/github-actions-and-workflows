@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.2.0...v0.3.0) (2026-03-22)
+
+### Features
+
+* add semantic release major tag ([0c99103](https://github.com/bruzit/github-actions-and-workflows/commit/0c9910378ac7738e40655f826e9cf57b770100db))
+
 ## [0.2.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.1.0...v0.2.0) (2026-03-20)
 
 ### Features
