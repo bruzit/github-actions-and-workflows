@@ -9,6 +9,11 @@ on:
       GH_APP_ID:
         type: string
         required: false
+      semantic_release_plugins:
+        type: string
+        required: false
+        default: ''
+        description: Space-separated list of additional semantic-release plugins to install.
     secrets:
       GH_APP_PEM_FILE:
         required: false
@@ -50,6 +55,7 @@ jobs:
           @semantic-release/changelog
           @semantic-release/git
           semantic-release-major-tag
+          ${{ inputs.SEMANTIC_RELEASE_PLUGINS }}
       - name: Verify Semantic Release
         run: npm audit signatures
       - name: Run Semantic Release
