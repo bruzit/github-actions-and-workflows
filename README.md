@@ -35,6 +35,7 @@ jobs:
       pull-requests: write
     with:
       GH_APP_ID: ${{ vars.GH_APP_ID }}
+      semantic_release_plugins: "@semantic-release/exec" # OPTIONAL Space-separated list of additional semantic-release plugins to install.
     secrets:
       GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
 ```
