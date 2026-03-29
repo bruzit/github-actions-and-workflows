@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.3.0...v0.4.0) (2026-03-29)
+
+### Features
+
+* additional semantic-release plugins ([3baaf53](https://github.com/bruzit/github-actions-and-workflows/commit/3baaf53690083e652e2d6de3219719e1aa966a87))
+
 ## [0.3.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.2.0...v0.3.0) (2026-03-22)
 
 ### Features
