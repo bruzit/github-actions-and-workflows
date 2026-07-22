@@ -5,6 +5,7 @@ A collection of GitHub composite actions and reusable workflows
 ## Features
 
 - [Semantic Release Workflow](#semantic-release-workflow)
+- [Linting](#linting)
 
 ### Reusable Semantic Release Workflow
 
@@ -93,6 +94,18 @@ plugins:
     - assets:
       - CHANGELOG.md
   - semantic-release-major-tag
+```
+
+## Linting
+
+Markdown is linted with [MegaLinter](https://megalinter.io). Run locally (needs Docker):
+
+```bash
+# report issues
+docker run --rm -v "$PWD":/tmp/lint oxsecurity/megalinter-documentation:v8
+
+# auto-fix where possible
+docker run --rm -e APPLY_FIXES=all -v "$PWD":/tmp/lint oxsecurity/megalinter-documentation:v8
 ```
 
 ## Copyright and Licensing
