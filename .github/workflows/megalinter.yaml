@@ -1,0 +1,37 @@
+---
+name: MegaLinter
+on:
+  pull_request:
+    paths:
+      - '**/*.md'
+      - '.markdownlint.yaml'
+      - '.mega-linter.yml'
+      - '.github/workflows/megalinter.yaml'
+
+concurrency:
+  group: megalinter-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  megalinter:
+    name: MegaLinter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+      - name: MegaLinter
+        uses: oxsecurity/megalinter/flavors/documentation@v8
+        env:
+          APPLY_FIXES: all
+          VALIDATE_ALL_CODEBASE: false
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit applied fixes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "style: apply megalinter fixes"
