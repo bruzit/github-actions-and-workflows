@@ -48,6 +48,8 @@ jobs:
         with:
           node-version: 'lts/*'
       - name: Install Semantic Release
+        env:
+          SEMANTIC_RELEASE_PLUGINS: ${{ inputs.semantic_release_plugins }}
         run: >
           npm install
           semantic-release
@@ -55,7 +57,7 @@ jobs:
           @semantic-release/changelog
           @semantic-release/git
           semantic-release-major-tag
-          ${{ inputs.SEMANTIC_RELEASE_PLUGINS }}
+          $SEMANTIC_RELEASE_PLUGINS
       - name: Verify Semantic Release
         run: npm audit signatures
       - name: Run Semantic Release
