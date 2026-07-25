@@ -35,10 +35,10 @@ jobs:
       issues: write
       pull-requests: write
     with:
-      GH_APP_ID: ${{ vars.GH_APP_ID }}
+      GH_SEM_REL_APP_ID: ${{ vars.GH_SEM_REL_APP_ID }}
       semantic_release_plugins: "@semantic-release/exec" # OPTIONAL Space-separated list of additional semantic-release plugins to install.
     secrets:
-      GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
+      GH_SEM_REL_APP_PEM_FILE: ${{ secrets.GH_SEM_REL_APP_PEM_FILE }}
 ```
 
 To create a GitHub App and a GitHub App Installation:
@@ -67,12 +67,12 @@ To create a GitHub App and a GitHub App Installation:
   - _Repository_ / Settings / Secrets and variables / Actions
     - Secrets
       - Repository secrets / **New repository secret**
-        - Name: `GH_APP_PEM_FILE`
+        - Name: `GH_SEM_REL_APP_PEM_FILE`
         - Secret: _content of the PEM file_
         - **Add secret**
     - Variables
       - Repository variables / **New repository variable**
-        - Name: `GH_APP_ID`
+        - Name: `GH_SEM_REL_APP_ID`
         - Value: _GitHub App ID_
         - **Add variable**
 

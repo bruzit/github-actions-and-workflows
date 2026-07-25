@@ -6,7 +6,7 @@ on:
       - main
   workflow_call:
     inputs:
-      GH_APP_ID:
+      GH_SEM_REL_APP_ID:
         type: string
         required: false
       semantic_release_plugins:
@@ -15,7 +15,7 @@ on:
         default: ''
         description: Space-separated list of additional semantic-release plugins to install.
     secrets:
-      GH_APP_PEM_FILE:
+      GH_SEM_REL_APP_PEM_FILE:
         required: false
 
 concurrency:
@@ -34,10 +34,10 @@ jobs:
       - name: Create GitHub App token
         uses: actions/create-github-app-token@v3
         id: gh-app-token
-        if: ${{ inputs.GH_APP_ID != '' }}
+        if: ${{ inputs.GH_SEM_REL_APP_ID != '' }}
         with:
-          app-id: ${{ inputs.GH_APP_ID }}
-          private-key: ${{ secrets.GH_APP_PEM_FILE }}
+          app-id: ${{ inputs.GH_SEM_REL_APP_ID }}
+          private-key: ${{ secrets.GH_SEM_REL_APP_PEM_FILE }}
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
