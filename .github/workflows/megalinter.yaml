@@ -25,6 +25,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.head_ref || '' }}
+          persist-credentials: false
       - name: MegaLinter
         uses: oxsecurity/megalinter/flavors/documentation@v9
         env:
