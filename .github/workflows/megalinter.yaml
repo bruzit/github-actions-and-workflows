@@ -24,9 +24,9 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.head_ref || '' }}
       - name: MegaLinter
-        uses: oxsecurity/megalinter/flavors/documentation@v8
+        uses: oxsecurity/megalinter/flavors/documentation@v9
         env:
           APPLY_FIXES: all
           VALIDATE_ALL_CODEBASE: false

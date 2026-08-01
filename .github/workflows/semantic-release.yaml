@@ -9,10 +9,10 @@ on:
       GH_SEM_REL_APP_ID:
         type: string
         required: false
+        description: GitHub App ID used to create the GitHub App token.
       semantic_release_plugins:
         type: string
         required: false
-        default: ''
         description: Space-separated list of additional semantic-release plugins to install.
     secrets:
       GH_SEM_REL_APP_PEM_FILE:
@@ -34,17 +34,17 @@ jobs:
       - name: Create GitHub App token
         uses: actions/create-github-app-token@v3
         id: gh-app-token
-        if: ${{ inputs.GH_SEM_REL_APP_ID != '' }}
+        if: inputs.GH_SEM_REL_APP_ID != ''
         with:
           app-id: ${{ inputs.GH_SEM_REL_APP_ID }}
           private-key: ${{ secrets.GH_SEM_REL_APP_PEM_FILE }}
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           token: ${{ steps.gh-app-token.outputs.token || secrets.GITHUB_TOKEN }}
-          fetch-depth: 0 
+          fetch-depth: 0
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 'lts/*'
       - name: Install Semantic Release
@@ -52,6 +52,7 @@ jobs:
           SEMANTIC_RELEASE_PLUGINS: ${{ inputs.semantic_release_plugins }}
         run: >
           npm install
+          --ignore-scripts
           semantic-release
           conventional-changelog-conventionalcommits
           @semantic-release/changelog
