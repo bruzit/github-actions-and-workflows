@@ -1,10 +1,10 @@
 # GitHub Actions and Workflows
 
-A collection of GitHub composite actions and reusable workflows
+A collection of reusable GitHub workflows
 
 ## Features
 
-- [Semantic Release Workflow](#semantic-release-workflow)
+- [Semantic Release Workflow](#reusable-semantic-release-workflow)
 - [Linting](#linting)
 
 ### Reusable Semantic Release Workflow
@@ -76,25 +76,7 @@ To create a GitHub App and a GitHub App Installation:
         - Value: _GitHub App ID_
         - **Add variable**
 
-Configure Semantic Release in the repository, for example, `.releaserc.yaml`:
-
-```yaml
----
-branches:
-  - main
-plugins:
-  - - "@semantic-release/commit-analyzer"
-    - preset: conventionalcommits
-  - - "@semantic-release/release-notes-generator"
-    - preset: conventionalcommits
-  - "@semantic-release/github"
-  - - "@semantic-release/changelog"
-    - changelogTitle: '# Changelog'
-  - - "@semantic-release/git"
-    - assets:
-      - CHANGELOG.md
-  - semantic-release-major-tag
-```
+Configure Semantic Release in the repository, for example like this repository's [`.releaserc.yaml`](.releaserc.yaml).
 
 ## Linting
 
@@ -102,10 +84,10 @@ Markdown is linted with [MegaLinter](https://megalinter.io). Run locally (needs 
 
 ```bash
 # report issues
-docker run --rm -v "$PWD":/tmp/lint oxsecurity/megalinter-documentation:v8
+docker run --rm -v "$PWD":/tmp/lint oxsecurity/megalinter-documentation:v9
 
 # auto-fix where possible
-docker run --rm -e APPLY_FIXES=all -v "$PWD":/tmp/lint oxsecurity/megalinter-documentation:v8
+docker run --rm -e APPLY_FIXES=all -v "$PWD":/tmp/lint oxsecurity/megalinter-documentation:v9
 ```
 
 ## Copyright and Licensing
