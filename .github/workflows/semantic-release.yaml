@@ -38,11 +38,16 @@ jobs:
         with:
           app-id: ${{ inputs.GH_SEM_REL_APP_ID }}
           private-key: ${{ secrets.GH_SEM_REL_APP_PEM_FILE }}
+          repositories: ${{ github.repository }}
+          permission-contents: write
+          permission-issues: write
+          permission-pull-requests: write
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
           token: ${{ steps.gh-app-token.outputs.token || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
+          persist-credentials: true
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
