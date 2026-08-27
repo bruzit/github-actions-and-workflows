@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.4](https://github.com/bruzit/github-actions-and-workflows/compare/v0.5.3...v0.5.4) (2026-08-27)
+
+### Bug Fixes
+
+* **semantic-release:** pin conventional-changelog-writer to v9 ([769db5d](https://github.com/bruzit/github-actions-and-workflows/commit/769db5d4722e6da635e8015e78729e7beb359f27))
+* **semantic-release:** pin conventionalcommits preset to v9 ([952bd8b](https://github.com/bruzit/github-actions-and-workflows/commit/952bd8b273e233e2b6e5ed9442916b7f6db152d1))
+
 ## [0.5.3](https://github.com/bruzit/github-actions-and-workflows/compare/v0.5.2...v0.5.3) (2026-08-01)
 
 ## [0.5.2](https://github.com/bruzit/github-actions-and-workflows/compare/v0.5.1...v0.5.2) (2026-07-26)
