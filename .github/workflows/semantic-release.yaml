@@ -57,7 +57,7 @@ jobs:
           SEMANTIC_RELEASE_PLUGINS: ${{ inputs.semantic_release_plugins }}
         run: |
           mapfile -t plugins <<< "$SEMANTIC_RELEASE_PLUGINS"
-          npm install --ignore-scripts semantic-release conventional-changelog-conventionalcommits @semantic-release/changelog @semantic-release/git semantic-release-major-tag "${plugins[@]}"
+          npm install --ignore-scripts semantic-release conventional-changelog-conventionalcommits conventional-changelog-writer@9 @semantic-release/changelog @semantic-release/git semantic-release-major-tag "${plugins[@]}"
       - name: Verify Semantic Release
         run: npm audit signatures
       - name: Run Semantic Release
