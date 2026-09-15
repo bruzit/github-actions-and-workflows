@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.5](https://github.com/bruzit/github-actions-and-workflows/compare/v0.5.4...v0.5.5) (2026-09-15)
+
+### Bug Fixes
+
+* **megalinter:** remove persist-credentials false to fix auto-commit ([bf8dfda](https://github.com/bruzit/github-actions-and-workflows/commit/bf8dfdae90a2151655ef14fb0d9b8e2177aba694))
+* **megalinter:** suppress zizmor artipacked on checkout, grant pull-requests write ([03d42f2](https://github.com/bruzit/github-actions-and-workflows/commit/03d42f290feaba99d1aebcb7d108c585b11cce2a))
+
 ## [0.5.4](https://github.com/bruzit/github-actions-and-workflows/compare/v0.5.3...v0.5.4) (2026-08-27)
 
 ### Bug Fixes
