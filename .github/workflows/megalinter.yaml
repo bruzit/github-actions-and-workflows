@@ -14,13 +14,14 @@ concurrency:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   megalinter:
     name: MegaLinter
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout repository  # zizmor: ignore[artipacked] credentials are needed for the auto-commit push; this workflow uploads no artifacts
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
