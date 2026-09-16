@@ -8,6 +8,7 @@ on:
       - '**/*.yaml'
       - '.markdownlint.yaml'
       - '.mega-linter.yml'
+      - '.yamllint.yaml'
       - '.github/workflows/megalinter.yaml'
 
 concurrency:
