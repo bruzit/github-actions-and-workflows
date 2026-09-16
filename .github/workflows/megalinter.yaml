@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - '**/*.md'
+      - '**/*.yml'
+      - '**/*.yaml'
       - '.markdownlint.yaml'
       - '.mega-linter.yml'
       - '.github/workflows/megalinter.yaml'
