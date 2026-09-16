@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.5.5...v0.6.0) (2026-09-16)
+
+### Features
+
+* enable yaml linting in megalinter ([8506bcf](https://github.com/bruzit/github-actions-and-workflows/commit/8506bcf9592ff344e6272e1e7f3cd87118e0177e))
+
+### Bug Fixes
+
+* include yamllint config in megalinter triggers ([c1cd681](https://github.com/bruzit/github-actions-and-workflows/commit/c1cd6816348b8bc658647385842b71415a068161))
+
 ## [0.5.5](https://github.com/bruzit/github-actions-and-workflows/compare/v0.5.4...v0.5.5) (2026-09-15)
 
 ### Bug Fixes
