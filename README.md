@@ -116,6 +116,30 @@ ENABLE:
 
 Add `ANSIBLE`, `BASH` or `TERRAFORM` to `ENABLE` as needed; ansible-lint additionally requires an `.ansible-lint` file. Copy [`zizmor.yaml`](zizmor.yaml) into the repository root and add `megalinter-reports/` to `.gitignore`.
 
+Pull requests lint only changed files. To also lint the whole repository weekly, for example to catch newly published advisories for pinned action tags, create `.github/workflows/megalinter-scheduled.yaml`:
+
+```yaml
+---
+name: MegaLinter Scheduled
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  megalinter:
+    name: MegaLinter
+    uses: bruzit/github-actions-and-workflows/.github/workflows/megalinter.yaml@v0
+    permissions:
+      contents: write
+      pull-requests: write
+    with:
+      validate_all_codebase: true
+```
+
+Fixes are not committed outside pull requests; findings fail the run.
+
 ## Linting
 
 This repository is linted by its own [MegaLinter workflow](.github/workflows/megalinter.yaml). Run locally (needs Docker):
