@@ -5,11 +5,15 @@ Reusable GitHub Actions workflows forming the CI baseline for every BruzIT repos
 ## Features
 
 - [Semantic Release Workflow](#reusable-semantic-release-workflow)
-- [Linting](#linting)
+- [MegaLinter Workflow](#reusable-megalinter-workflow)
 
 ### Reusable Semantic Release Workflow
 
 Reusable [Semantic Release workflow](.github/workflows/semantic-release.yaml) using the Conventional Commits preset to automate versioning, tags with SemVer and major tag, generates [GitHub releases](https://github.com/bruzit/github-actions-and-workflows/releases), and updates the [CHANGELOG](CHANGELOG.md).
+
+### Reusable MegaLinter Workflow
+
+Reusable [MegaLinter workflow](.github/workflows/megalinter.yaml) linting pull requests with the `terraform` flavor, auto-committing fixable findings. Linters run with MegaLinter's default rules, except zizmor, whose [`zizmor.yaml`](zizmor.yaml) allows tag-pinned actions.
 
 ## Usage
 
@@ -78,16 +82,50 @@ To create a GitHub App and a GitHub App Installation:
 
 Configure Semantic Release in the repository, for example like this repository's [`.releaserc.yaml`](.releaserc.yaml).
 
+### Use MegaLinter Workflow
+
+Create `.github/workflows/megalinter.yaml`:
+
+```yaml
+---
+name: MegaLinter
+
+on:
+  pull_request:
+
+jobs:
+  megalinter:
+    name: MegaLinter
+    uses: bruzit/github-actions-and-workflows/.github/workflows/megalinter.yaml@v0
+    permissions:
+      contents: write
+      pull-requests: write
+    # with:
+    #   validate_all_codebase: true # OPTIONAL Lint the whole repository, not only the changed files.
+```
+
+Create `.mega-linter.yml` listing the linters for the repository, for example:
+
+```yaml
+---
+ENABLE:
+  - ACTION
+  - MARKDOWN
+  - YAML
+```
+
+Add `ANSIBLE`, `BASH` or `TERRAFORM` to `ENABLE` as needed; ansible-lint additionally requires an `.ansible-lint` file. Copy [`zizmor.yaml`](zizmor.yaml) into the repository root and add `megalinter-reports/` to `.gitignore`.
+
 ## Linting
 
-Markdown is linted with [MegaLinter](https://megalinter.io). Run locally (needs Docker):
+This repository is linted by its own [MegaLinter workflow](.github/workflows/megalinter.yaml). Run locally (needs Docker):
 
 ```bash
 # report issues
-docker run --rm -v "$PWD":/tmp/lint oxsecurity/megalinter-documentation:v9
+docker run --rm -v "$PWD":/tmp/lint oxsecurity/megalinter-terraform:v10
 
 # auto-fix where possible
-docker run --rm -e APPLY_FIXES=all -v "$PWD":/tmp/lint oxsecurity/megalinter-documentation:v9
+docker run --rm -e APPLY_FIXES=all -v "$PWD":/tmp/lint oxsecurity/megalinter-terraform:v10
 ```
 
 ## Copyright and Licensing

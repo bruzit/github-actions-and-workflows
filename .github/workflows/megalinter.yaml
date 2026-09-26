@@ -2,27 +2,25 @@
 name: MegaLinter
 on:
   pull_request:
-    paths:
-      - '**/*.md'
-      - '**/*.yml'
-      - '**/*.yaml'
-      - '.markdownlint.yaml'
-      - '.mega-linter.yml'
-      - '.yamllint.yaml'
-      - '.github/workflows/megalinter.yaml'
+  workflow_call:
+    inputs:
+      validate_all_codebase:
+        type: boolean
+        required: false
+        default: false
+        description: Lint the whole repository instead of the files changed by the pull request.
 
 concurrency:
   group: megalinter-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   megalinter:
     name: MegaLinter
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout repository  # zizmor: ignore[artipacked] credentials are needed for the auto-commit push; this workflow uploads no artifacts
         uses: actions/checkout@v7
@@ -30,10 +28,15 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.head_ref || '' }}
       - name: MegaLinter
-        uses: oxsecurity/megalinter/flavors/documentation@v9
+        uses: oxsecurity/megalinter/flavors/terraform@v10
         env:
           APPLY_FIXES: all
-          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_ALL_CODEBASE: ${{ inputs.validate_all_codebase || false }}
+          ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES: GITHUB_TOKEN
+          DISABLE_LINTERS: YAML_PRETTIER
+          MARKDOWN_FILTER_REGEX_EXCLUDE: "(CHANGELOG\\.md)"
+          SHOW_ELAPSED_TIME: true
+          FLAVOR_SUGGESTIONS: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Commit applied fixes
         if: github.event.pull_request.head.repo.full_name == github.repository
