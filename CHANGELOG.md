@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.7.0...v0.8.0) (2026-09-26)
+
+### Features
+
+* move major tags in the semantic release workflow ([8b463cf](https://github.com/bruzit/github-actions-and-workflows/commit/8b463cfef7357c4455347812b4fa59f575125a82))
+
 ## [0.7.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.6.0...v0.7.0) (2026-09-26)
 
 ### Features
