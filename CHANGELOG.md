@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.6.0...v0.7.0) (2026-09-26)
+
+### Features
+
+* expose megalinter as reusable workflow ([fa8798c](https://github.com/bruzit/github-actions-and-workflows/commit/fa8798caa6663a8aaa1123563a4df4bb22a3a5b3))
+
 ## [0.6.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.5.5...v0.6.0) (2026-09-16)
 
 ### Features
