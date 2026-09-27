@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.1](https://github.com/bruzit/github-actions-and-workflows/compare/v0.8.0...v0.8.1) (2026-09-27)
+
+### Bug Fixes
+
+* stop installing semantic-release-major-tag ([3f6b299](https://github.com/bruzit/github-actions-and-workflows/commit/3f6b299a51d51dd92e5ea761cc367c1b649b3eb4))
+
 ## [0.8.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.7.0...v0.8.0) (2026-09-26)
 
 ### Features
