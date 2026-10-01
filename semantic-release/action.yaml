@@ -1,0 +1,71 @@
+---
+name: Semantic Release
+description: Run semantic-release with the Conventional Commits preset and move the major tags.
+inputs:
+  app-id:
+    required: false
+    default: ''
+    description: GitHub App ID used to create the GitHub App token.
+  app-private-key:
+    required: false
+    default: ''
+    description: GitHub App private key used to create the GitHub App token.
+  plugins:
+    required: false
+    default: ''
+    description: Space-separated list of additional semantic-release plugins to install.
+runs:
+  using: composite
+  steps:
+    - name: Create GitHub App token
+      uses: actions/create-github-app-token@v3
+      id: gh-app-token
+      if: inputs.app-id != ''
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.app-private-key }}
+        repositories: ${{ github.repository }}
+        permission-contents: write
+        permission-issues: write
+        permission-pull-requests: write
+    - name: Checkout repository
+      uses: actions/checkout@v7
+      with:
+        token: ${{ steps.gh-app-token.outputs.token || github.token }}
+        fetch-depth: 0
+        persist-credentials: true
+    - name: Set up Node.js
+      uses: actions/setup-node@v7
+      with:
+        node-version: 'lts/*'
+    - name: Install Semantic Release  # zizmor: ignore[adhoc-packages] lockfiles are not committed by design
+      shell: bash
+      env:
+        SEMANTIC_RELEASE_PLUGINS: ${{ inputs.plugins }}
+      run: |
+        mapfile -t plugins <<< "$SEMANTIC_RELEASE_PLUGINS"
+        npm install --ignore-scripts semantic-release conventional-changelog-conventionalcommits@9 @semantic-release/changelog @semantic-release/git "${plugins[@]}"
+    - name: Verify Semantic Release
+      shell: bash
+      run: npm audit signatures
+    - name: Run Semantic Release
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ steps.gh-app-token.outputs.token || github.token }}
+      run: npx semantic-release
+    - name: Move major tags
+      if: ${{ !cancelled() }}
+      shell: bash
+      run: |
+        git fetch --force --prune --prune-tags origin
+        re='^(v(0|[1-9][0-9]*))\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\+[0-9A-Za-z.-]+)?$'
+        declare -A latest=()
+        while read -r tag; do
+          [[ $tag =~ $re ]] && latest[${BASH_REMATCH[1]}]=$tag
+        done < <(git tag --list 'v*.*.*' --merged HEAD --sort=v:refname)
+        for major in "${!latest[@]}"; do
+          tag=${latest[$major]}
+          [ "$(git rev-parse -q --verify "refs/tags/$major^{commit}")" = "$(git rev-parse "$tag^{commit}")" ] && continue
+          git tag --force "$major" "$tag"
+          git push --force origin "refs/tags/$major"
+        done
