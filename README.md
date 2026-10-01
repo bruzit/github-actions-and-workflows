@@ -10,11 +10,11 @@ Reusable GitHub Actions workflows forming the CI baseline for every BruzIT repos
 
 ### Semantic Release Composite Action
 
-[Semantic Release composite action](semantic-release/action.yaml) with the same steps as the reusable workflow. It checks out the repository with the GitHub App token, so the changelog commit and the major tags are pushed as the GitHub App.
+[Semantic Release composite action](semantic-release/action.yaml) using the Conventional Commits preset to automate versioning, tags with SemVer and major tag, generates [GitHub releases](https://github.com/bruzit/github-actions-and-workflows/releases), and updates the [CHANGELOG](CHANGELOG.md). It checks out the repository with the GitHub App token, so the changelog commit and the major tags are pushed as the GitHub App; without `app-id` it uses `GITHUB_TOKEN`.
 
 ### Reusable Semantic Release Workflow
 
-Reusable [Semantic Release workflow](.github/workflows/semantic-release.yaml) using the Conventional Commits preset to automate versioning, tags with SemVer and major tag, generates [GitHub releases](https://github.com/bruzit/github-actions-and-workflows/releases), and updates the [CHANGELOG](CHANGELOG.md).
+Reusable [Semantic Release workflow](.github/workflows/semantic-release.yaml), similar to the [Semantic Release Action](#semantic-release-composite-action).
 
 ### Reusable MegaLinter Workflow
 
@@ -23,42 +23,6 @@ Reusable [MegaLinter workflow](.github/workflows/megalinter.yaml) linting pull r
 ## Usage
 
 ### Use Semantic Release Action
-
-Create a workflow, for example, `.github/workflows/semantic-release.yaml`; the job's `release` environment holds `GH_SEM_REL_APP_ID` and `GH_SEM_REL_APP_PEM_FILE`:
-
-```yaml
----
-name: Semantic Release
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    environment: release
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-    concurrency:
-      group: release-${{ github.ref }}
-      cancel-in-progress: false
-    steps:
-      - name: Semantic Release
-        uses: bruzit/github-actions-and-workflows/semantic-release@v0
-        with:
-          app-id: ${{ vars.GH_SEM_REL_APP_ID }}
-          app-private-key: ${{ secrets.GH_SEM_REL_APP_PEM_FILE }}
-          plugins: "@semantic-release/exec" # OPTIONAL Space-separated list of additional semantic-release plugins to install.
-```
-
-The action checks out the repository itself. A local `uses: ./semantic-release` needs a prior `actions/checkout` with `persist-credentials: false`.
-
-### Use Semantic Release Workflow
 
 Create a workflow, for example, `.github/workflows/semantic-release.yaml`:
 
@@ -74,17 +38,21 @@ on:
 jobs:
   release:
     name: Release
-    uses: bruzit/github-actions-and-workflows/.github/workflows/semantic-release.yaml@v0
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       issues: write
       pull-requests: write
-    with:
-      GH_SEM_REL_APP_ID: ${{ vars.GH_SEM_REL_APP_ID }}
-      semantic_release_plugins: "@semantic-release/exec" # OPTIONAL Space-separated list of additional semantic-release plugins to install.
-    secrets:
-      GH_SEM_REL_APP_PEM_FILE: ${{ secrets.GH_SEM_REL_APP_PEM_FILE }}
+    steps:
+      - name: Semantic Release
+        uses: bruzit/github-actions-and-workflows/semantic-release@v0
+        with:
+          app-id: ${{ vars.GH_SEM_REL_APP_ID }}
+          app-private-key: ${{ secrets.GH_SEM_REL_APP_PEM_FILE }}
+          plugins: "@semantic-release/exec" # OPTIONAL Space-separated list of additional semantic-release plugins to install.
 ```
+
+The action checks out the repository itself. A local `uses: ./semantic-release` needs a prior `actions/checkout` with `persist-credentials: false`.
 
 To create a GitHub App and a GitHub App Installation:
 
@@ -122,6 +90,34 @@ To create a GitHub App and a GitHub App Installation:
         - **Add variable**
 
 Configure Semantic Release in the repository, for example like this repository's [`.releaserc.yaml`](.releaserc.yaml).
+
+### Use Semantic Release Workflow
+
+Similar to [Use Semantic Release Action](#use-semantic-release-action), with the reusable workflow:
+
+```yaml
+---
+name: Semantic Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Release
+    uses: bruzit/github-actions-and-workflows/.github/workflows/semantic-release.yaml@v0
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    with:
+      GH_SEM_REL_APP_ID: ${{ vars.GH_SEM_REL_APP_ID }}
+      semantic_release_plugins: "@semantic-release/exec" # OPTIONAL Space-separated list of additional semantic-release plugins to install.
+    secrets:
+      GH_SEM_REL_APP_PEM_FILE: ${{ secrets.GH_SEM_REL_APP_PEM_FILE }}
+```
 
 ### Use MegaLinter Workflow
 
