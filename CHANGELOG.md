@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.8.1...v0.9.0) (2026-10-01)
+
+### Features
+
+* add semantic release composite action ([17ecf1f](https://github.com/bruzit/github-actions-and-workflows/commit/17ecf1ff92897fa4b6c4ad145fc35b1131188be4))
+
 ## [0.8.1](https://github.com/bruzit/github-actions-and-workflows/compare/v0.8.0...v0.8.1) (2026-09-27)
 
 ### Bug Fixes
