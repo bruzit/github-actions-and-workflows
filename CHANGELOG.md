@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.1](https://github.com/bruzit/github-actions-and-workflows/compare/v0.9.0...v0.9.1) (2026-10-02)
+
+### Bug Fixes
+
+* split semantic release plugins on whitespace ([4ea955a](https://github.com/bruzit/github-actions-and-workflows/commit/4ea955af5f973fe37112589b51c08d00aa82ebc6))
+
 ## [0.9.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.8.1...v0.9.0) (2026-10-01)
 
 ### Features
