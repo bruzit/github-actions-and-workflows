@@ -43,7 +43,7 @@ runs:
       env:
         SEMANTIC_RELEASE_PLUGINS: ${{ inputs.plugins }}
       run: |
-        mapfile -t plugins <<< "$SEMANTIC_RELEASE_PLUGINS"
+        read -ra plugins <<< "$SEMANTIC_RELEASE_PLUGINS"
         npm install --ignore-scripts semantic-release conventional-changelog-conventionalcommits@9 @semantic-release/changelog @semantic-release/git "${plugins[@]}"
     - name: Verify Semantic Release
       shell: bash
