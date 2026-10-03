@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.2](https://github.com/bruzit/github-actions-and-workflows/compare/v0.9.1...v0.9.2) (2026-10-03)
+
+### Bug Fixes
+
+* never move a major tag backwards ([eb3a628](https://github.com/bruzit/github-actions-and-workflows/commit/eb3a628aeb29f4f5f099bc9580dee09ebe70613c))
+
 ## [0.9.1](https://github.com/bruzit/github-actions-and-workflows/compare/v0.9.0...v0.9.1) (2026-10-02)
 
 ### Bug Fixes
