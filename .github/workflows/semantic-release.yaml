@@ -1,9 +1,6 @@
 ---
 name: Semantic Release
 on:
-  push:
-    branches:
-      - main
   workflow_call:
     inputs:
       GH_SEM_REL_APP_ID:
