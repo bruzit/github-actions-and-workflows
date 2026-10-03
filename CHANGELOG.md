@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.9.2...v0.10.0) (2026-10-03)
+
+### ⚠ BREAKING CHANGES
+
+* remove the reusable semantic release workflow
+
+### Features
+
+* remove the reusable semantic release workflow ([d8a175c](https://github.com/bruzit/github-actions-and-workflows/commit/d8a175c418b7a3f29358e72ceccab8abc5b644ad))
+
 ## [0.9.2](https://github.com/bruzit/github-actions-and-workflows/compare/v0.9.1...v0.9.2) (2026-10-03)
 
 ### Bug Fixes
