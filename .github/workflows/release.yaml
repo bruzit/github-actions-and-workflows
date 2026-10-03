@@ -1,0 +1,29 @@
+---
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Semantic Release
+        uses: ./semantic-release
+        with:
+          app-id: ${{ vars.GH_SEM_REL_APP_ID }}
+          app-private-key: ${{ secrets.GH_SEM_REL_APP_PEM_FILE }}
