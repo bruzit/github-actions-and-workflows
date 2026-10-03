@@ -1,20 +1,15 @@
 # GitHub Actions and Workflows
 
-Reusable GitHub Actions workflows forming the CI baseline for every BruzIT repository: semantic-release versioning and MegaLinter linting.
+Reusable GitHub Actions and workflows forming the CI baseline for every BruzIT repository: semantic-release versioning and MegaLinter linting.
 
 ## Features
 
 - [Semantic Release Action](#semantic-release-composite-action)
-- [Semantic Release Workflow](#reusable-semantic-release-workflow)
 - [MegaLinter Workflow](#reusable-megalinter-workflow)
 
 ### Semantic Release Composite Action
 
 [Semantic Release composite action](semantic-release/action.yaml) using the Conventional Commits preset to automate versioning, tags with SemVer and major tag, generates [GitHub releases](https://github.com/bruzit/github-actions-and-workflows/releases), and updates the [CHANGELOG](CHANGELOG.md). It checks out the repository with the GitHub App token, so the changelog commit and the major tags are pushed as the GitHub App; without `app-id` it uses `GITHUB_TOKEN`.
-
-### Reusable Semantic Release Workflow
-
-Reusable [Semantic Release workflow](.github/workflows/semantic-release.yaml), similar to the [Semantic Release Action](#semantic-release-composite-action).
 
 ### Reusable MegaLinter Workflow
 
@@ -90,34 +85,6 @@ To create a GitHub App and a GitHub App Installation:
         - **Add variable**
 
 Configure Semantic Release in the repository, for example like this repository's [`.releaserc.yaml`](.releaserc.yaml).
-
-### Use Semantic Release Workflow
-
-Similar to [Use Semantic Release Action](#use-semantic-release-action), with the reusable workflow:
-
-```yaml
----
-name: Semantic Release
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  release:
-    name: Release
-    uses: bruzit/github-actions-and-workflows/.github/workflows/semantic-release.yaml@v0
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-    with:
-      GH_SEM_REL_APP_ID: ${{ vars.GH_SEM_REL_APP_ID }}
-      semantic_release_plugins: "@semantic-release/exec" # OPTIONAL Space-separated list of additional semantic-release plugins to install.
-    secrets:
-      GH_SEM_REL_APP_PEM_FILE: ${{ secrets.GH_SEM_REL_APP_PEM_FILE }}
-```
 
 ### Use MegaLinter Workflow
 
