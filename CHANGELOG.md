@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.11.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.10.0...v0.11.0) (2026-10-06)
+
+### Features
+
+* add gitleaks secret scan ([c1b78e9](https://github.com/bruzit/github-actions-and-workflows/commit/c1b78e94aa4be3a2d665025b6e2dc6d70795cfad))
+
 ## [0.10.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.9.2...v0.10.0) (2026-10-03)
 
 ### ⚠ BREAKING CHANGES
