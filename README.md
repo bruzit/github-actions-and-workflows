@@ -13,7 +13,7 @@ Reusable GitHub Actions and workflows forming the CI baseline for every BruzIT r
 
 ### Reusable MegaLinter Workflow
 
-Reusable [MegaLinter workflow](.github/workflows/megalinter.yaml) linting pull requests with the `terraform` flavor, auto-committing fixable findings. Linters run with MegaLinter's default rules, except zizmor, whose [`zizmor.yaml`](zizmor.yaml) allows tag-pinned actions.
+Reusable [MegaLinter workflow](.github/workflows/megalinter.yaml) linting pull requests with the `terraform` flavor, auto-committing fixable findings, then scanning the full git history for secrets with [gitleaks](https://github.com/gitleaks/gitleaks). Linters run with MegaLinter's default rules, except zizmor, whose [`zizmor.yaml`](zizmor.yaml) allows tag-pinned actions.
 
 ## Usage
 
