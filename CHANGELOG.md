@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.11.1](https://github.com/bruzit/github-actions-and-workflows/compare/v0.11.0...v0.11.1) (2026-10-07)
+
+### Bug Fixes
+
+* warn when a diverged major tag is skipped ([315c03a](https://github.com/bruzit/github-actions-and-workflows/commit/315c03a81a138968079f4f13c23e43feedfeb051))
+
 ## [0.11.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.10.0...v0.11.0) (2026-10-06)
 
 ### Features
