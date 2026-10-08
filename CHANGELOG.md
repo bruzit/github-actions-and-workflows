@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.12.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.11.2...v0.12.0) (2026-10-08)
+
+### Features
+
+* lint markdown with default rules ([b15fcae](https://github.com/bruzit/github-actions-and-workflows/commit/b15fcaead74d58a16d4633aab2f5e807a4ac8862))
+
 ## [0.11.2](https://github.com/bruzit/github-actions-and-workflows/compare/v0.11.1...v0.11.2) (2026-10-08)
 
 ### Bug Fixes
