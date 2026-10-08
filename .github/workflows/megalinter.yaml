@@ -44,4 +44,5 @@ jobs:
         with:
           commit_message: "style: apply megalinter fixes"
       - name: Gitleaks
+        if: ${{ !cancelled() }}
         run: docker run --rm -v "${GITHUB_WORKSPACE}:/repo" ghcr.io/gitleaks/gitleaks:latest git --redact --verbose /repo
