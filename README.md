@@ -13,13 +13,15 @@ Reusable GitHub Actions and workflows forming the CI baseline for every BruzIT r
 
 ### Reusable MegaLinter Workflow
 
-Reusable [MegaLinter workflow](.github/workflows/megalinter.yaml) linting pull requests with the `terraform` flavor, auto-committing fixable findings, then scanning the full git history for secrets with [gitleaks](https://github.com/gitleaks/gitleaks). Linters run with MegaLinter's default rules, except zizmor, whose [`zizmor.yaml`](zizmor.yaml) allows tag-pinned actions.
+Reusable [MegaLinter workflow](.github/workflows/megalinter.yaml) linting pull requests with the `terraform` flavor, auto-committing fixable findings, then scanning the full git history for secrets with [gitleaks](https://github.com/gitleaks/gitleaks). Linters run with MegaLinter's default rules, except markdownlint, whose [`.markdownlint.yaml`](.markdownlint.yaml) applies markdownlint's default rules without line length, and zizmor, whose [`zizmor.yaml`](zizmor.yaml) allows tag-pinned actions.
 
 ## Usage
 
+The callers below are those of [bruzit/.github](https://github.com/bruzit/.github/tree/main/.github/workflows).
+
 ### Use Semantic Release Action
 
-Create a workflow, for example, `.github/workflows/semantic-release.yaml`:
+Create `.github/workflows/semantic-release.yaml`:
 
 ```yaml
 ---
@@ -30,10 +32,14 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}
+
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-latest
+    environment: release
+    runs-on: ubuntu-slim
     permissions: {}
     steps:
       - name: Semantic Release
@@ -41,10 +47,38 @@ jobs:
         with:
           app-id: ${{ vars.GH_SEM_REL_APP_ID }}
           app-private-key: ${{ secrets.GH_SEM_REL_APP_PEM_FILE }}
-          plugins: "@semantic-release/exec" # OPTIONAL Space-separated list of additional semantic-release plugins to install.
 ```
 
+The optional `plugins` input takes a space-separated list of additional semantic-release plugins to install, e.g. `"@semantic-release/exec"`.
+
 The action checks out the repository itself. A local `uses: ./semantic-release` needs a prior `actions/checkout` with `persist-credentials: false`.
+
+The job needs no `GITHUB_TOKEN` permissions. The action releases with the GitHub App token only: it creates an installation token for the calling repository with `contents`, `issues` and `pull-requests` write, and uses it for the checkout, the changelog commit and tag pushes, the GitHub release, and the release comments on issues and pull requests. There is no `GITHUB_TOKEN` fallback; `app-id` and `app-private-key` are required.
+
+The `release` environment, its `GH_SEM_REL_APP_ID` variable and `GH_SEM_REL_APP_PEM_FILE` secret are provisioned by [GitHub Organization as Code](https://github.com/bruzit/github-organization-as-code) from [`bruzit.yaml`](https://github.com/bruzit/.github/blob/main/bruzit.yaml), not created by hand and not as repository variables or secrets. The organization environment is added to every repository, deployable from the default branch only, and the App bypasses the default-branch ruleset to push the changelog commit:
+
+```yaml
+---
+organization:
+  environments:
+    release:
+      deployment_branches:
+        - ~DEFAULT_BRANCH
+      variables:
+        GH_SEM_REL_APP_ID: "123456"
+      secrets:
+        - GH_SEM_REL_APP_PEM_FILE
+  rulesets:
+    default-branch:
+      bypass_apps:
+        - 123456
+```
+
+GitHub Organization as Code creates the secret with a placeholder value only; set the App's private key once per repository:
+
+```shell
+gh secret set GH_SEM_REL_APP_PEM_FILE --env release --repo OWNER/REPOSITORY < private-key.pem
+```
 
 To create a GitHub App and a GitHub App Installation:
 
@@ -58,7 +92,7 @@ To create a GitHub App and a GitHub App Installation:
       - Webhook
         - Active: off
       - Permissions
-        - Organization permissions
+        - Repository permissions
           - Contents: Read and write
           - Issues: Read and write
           - Pull requests: Read and write
@@ -69,17 +103,6 @@ To create a GitHub App and a GitHub App Installation:
         - **Generate a private key**
       - Install App
         - _your organization_: **Install**
-  - _Repository_ / Settings / Secrets and variables / Actions
-    - Secrets
-      - Repository secrets / **New repository secret**
-        - Name: `GH_SEM_REL_APP_PEM_FILE`
-        - Secret: _content of the PEM file_
-        - **Add secret**
-    - Variables
-      - Repository variables / **New repository variable**
-        - Name: `GH_SEM_REL_APP_ID`
-        - Value: _GitHub App ID_
-        - **Add variable**
 
 Configure Semantic Release in the repository, for example like this repository's [`.releaserc.yaml`](.releaserc.yaml).
 
@@ -101,9 +124,9 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    # with:
-    #   validate_all_codebase: true # OPTIONAL Lint the whole repository, not only the changed files.
 ```
+
+The caller grants `contents: write` for the push of the auto-fix commit to the pull request branch and `pull-requests: write` for MegaLinter's pull request comments, both with `GITHUB_TOKEN`; a called workflow's `GITHUB_TOKEN` cannot exceed the caller's permissions. The workflow needs no secrets.
 
 Create `.mega-linter.yml` listing the linters for the repository, for example:
 
@@ -115,7 +138,7 @@ ENABLE:
   - YAML
 ```
 
-Add `ANSIBLE`, `BASH` or `TERRAFORM` to `ENABLE` as needed; ansible-lint additionally requires an `.ansible-lint` file. Copy [`zizmor.yaml`](zizmor.yaml) into the repository root and add `megalinter-reports/` to `.gitignore`.
+Add `ANSIBLE`, `BASH` or `TERRAFORM` to `ENABLE` as needed; ansible-lint additionally requires an `.ansible-lint` file. Copy [`.markdownlint.yaml`](.markdownlint.yaml) and [`zizmor.yaml`](zizmor.yaml) into the repository root and add `megalinter-reports/` to `.gitignore`.
 
 Pull requests lint only changed files. To also lint the whole repository weekly, for example to catch newly published advisories for pinned action tags, create `.github/workflows/megalinter-scheduled.yaml`:
 
