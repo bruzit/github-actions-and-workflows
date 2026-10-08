@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.12.1...v0.13.0) (2026-10-08)
+
+### Features
+
+* author release commits as the release app ([3b36ead](https://github.com/bruzit/github-actions-and-workflows/commit/3b36ead17d79f06f318c04e892013921f5c37f35))
+
 ## [0.12.1](https://github.com/bruzit/github-actions-and-workflows/compare/v0.12.0...v0.12.1) (2026-10-08)
 
 ### Bug Fixes
