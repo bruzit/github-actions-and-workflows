@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13.1](https://github.com/bruzit/github-actions-and-workflows/compare/v0.13.0...v0.13.1) (2026-10-08)
+
+### Bug Fixes
+
+* scan only pull request commits with gitleaks ([3825582](https://github.com/bruzit/github-actions-and-workflows/commit/382558255ecaa8368dfd347bbceaa414545eba9f))
+
 ## [0.13.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.12.1...v0.13.0) (2026-10-08)
 
 ### Features
