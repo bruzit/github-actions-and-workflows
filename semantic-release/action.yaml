@@ -3,12 +3,10 @@ name: Semantic Release
 description: Run semantic-release with the Conventional Commits preset and move the major tags.
 inputs:
   app-id:
-    required: false
-    default: ''
+    required: true
     description: GitHub App ID used to create the GitHub App token.
   app-private-key:
-    required: false
-    default: ''
+    required: true
     description: GitHub App private key used to create the GitHub App token.
   plugins:
     required: false
@@ -20,7 +18,6 @@ runs:
     - name: Create GitHub App token
       uses: actions/create-github-app-token@v3
       id: gh-app-token
-      if: inputs.app-id != ''
       with:
         app-id: ${{ inputs.app-id }}
         private-key: ${{ inputs.app-private-key }}
@@ -31,7 +28,7 @@ runs:
     - name: Checkout repository
       uses: actions/checkout@v7
       with:
-        token: ${{ steps.gh-app-token.outputs.token || github.token }}
+        token: ${{ steps.gh-app-token.outputs.token }}
         fetch-depth: 0
         persist-credentials: true
     - name: Set up Node.js
@@ -51,7 +48,7 @@ runs:
     - name: Run Semantic Release
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ steps.gh-app-token.outputs.token || github.token }}
+        GITHUB_TOKEN: ${{ steps.gh-app-token.outputs.token }}
       run: npx semantic-release
     - name: Move major tags
       if: ${{ !cancelled() }}

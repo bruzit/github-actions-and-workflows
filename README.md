@@ -9,7 +9,7 @@ Reusable GitHub Actions and workflows forming the CI baseline for every BruzIT r
 
 ### Semantic Release Composite Action
 
-[Semantic Release composite action](semantic-release/action.yaml) using the Conventional Commits preset to automate versioning, tags with SemVer and major tag, generates [GitHub releases](https://github.com/bruzit/github-actions-and-workflows/releases), and updates the [CHANGELOG](CHANGELOG.md). It checks out the repository with the GitHub App token, so the changelog commit and the major tags are pushed as the GitHub App; without `app-id` it uses `GITHUB_TOKEN`.
+[Semantic Release composite action](semantic-release/action.yaml) using the Conventional Commits preset to automate versioning, tags with SemVer and major tag, generates [GitHub releases](https://github.com/bruzit/github-actions-and-workflows/releases), and updates the [CHANGELOG](CHANGELOG.md). It checks out the repository with the GitHub App token, so the changelog commit and the major tags are pushed as the GitHub App.
 
 ### Reusable MegaLinter Workflow
 
@@ -34,10 +34,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
+    permissions: {}
     steps:
       - name: Semantic Release
         uses: bruzit/github-actions-and-workflows/semantic-release@v0
