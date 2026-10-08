@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.12.1](https://github.com/bruzit/github-actions-and-workflows/compare/v0.12.0...v0.12.1) (2026-10-08)
+
+### Bug Fixes
+
+* release with the app token only ([fbcf9ad](https://github.com/bruzit/github-actions-and-workflows/commit/fbcf9ad5550c8efc481f80bb4eb787716d4643de))
+
 ## [0.12.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.11.2...v0.12.0) (2026-10-08)
 
 ### Features
