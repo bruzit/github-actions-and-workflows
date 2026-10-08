@@ -46,4 +46,6 @@ jobs:
           commit_message: "style: apply megalinter fixes"
       - name: Gitleaks
         if: ${{ !cancelled() }}
-        run: docker run --rm -v "${GITHUB_WORKSPACE}:/repo" ghcr.io/gitleaks/gitleaks:latest git --redact --verbose /repo
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: docker run --rm -v "${GITHUB_WORKSPACE}:/repo" ghcr.io/gitleaks/gitleaks:latest git --redact --verbose ${BASE_SHA:+"--log-opts=${BASE_SHA}..HEAD"} /repo
