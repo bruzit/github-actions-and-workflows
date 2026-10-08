@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.11.2](https://github.com/bruzit/github-actions-and-workflows/compare/v0.11.1...v0.11.2) (2026-10-08)
+
+### Bug Fixes
+
+* run gitleaks when megalinter fails ([0a058e7](https://github.com/bruzit/github-actions-and-workflows/commit/0a058e72b6ef01c70d81eefa445dab16d512a34a))
+
 ## [0.11.1](https://github.com/bruzit/github-actions-and-workflows/compare/v0.11.0...v0.11.1) (2026-10-07)
 
 ### Bug Fixes
