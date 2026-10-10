@@ -128,7 +128,7 @@ jobs:
 
 The caller grants `contents: write` for the push of the auto-fix commit to the pull request branch and `pull-requests: write` for MegaLinter's pull request comments, both with `GITHUB_TOKEN`; a called workflow's `GITHUB_TOKEN` cannot exceed the caller's permissions. The workflow needs no secrets.
 
-Create `.mega-linter.yml` listing the linters for the repository, for example:
+Create `.mega-linter.yaml` listing the linters for the repository, for example:
 
 ```yaml
 ---
