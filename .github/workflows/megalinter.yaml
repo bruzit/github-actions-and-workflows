@@ -1,7 +1,6 @@
 ---
 name: MegaLinter
 on:
-  pull_request:
   workflow_call:
     inputs:
       validate_all_codebase:
