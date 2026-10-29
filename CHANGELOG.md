@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13.2](https://github.com/bruzit/github-actions-and-workflows/compare/v0.13.1...v0.13.2) (2026-10-29)
+
+### Bug Fixes
+
+* report megalinter formatter errors as blocking ([3e319db](https://github.com/bruzit/github-actions-and-workflows/commit/3e319dba6d07b3bcd8ba5d69042447980c1c7805))
+
 ## [0.13.1](https://github.com/bruzit/github-actions-and-workflows/compare/v0.13.0...v0.13.1) (2026-10-08)
 
 ### Bug Fixes
