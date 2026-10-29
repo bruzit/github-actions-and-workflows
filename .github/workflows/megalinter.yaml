@@ -33,6 +33,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: ${{ inputs.validate_all_codebase || false }}
           ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES: GITHUB_TOKEN
           DISABLE_LINTERS: YAML_PRETTIER
+          FORMATTERS_DISABLE_ERRORS: false
           MARKDOWN_FILTER_REGEX_EXCLUDE: "(CHANGELOG\\.md)"
           MARKDOWN_MARKDOWNLINT_CONFIG_FILE: .markdownlint.yaml
           SHOW_ELAPSED_TIME: true
