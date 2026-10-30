@@ -30,6 +30,12 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.head_ref || '' }}
+      - name: Debug autofix env
+        env:
+          APP_ID: ${{ vars.GH_AUTOFIX_APP_ID }}
+          HAS_KEY: ${{ secrets.GH_AUTOFIX_APP_PEM_FILE != '' }}
+          KEY_LEN: ${{ format('{0}', secrets.GH_AUTOFIX_APP_PEM_FILE) != '' && 'nonempty' || 'empty' }}
+        run: echo "app_id=$APP_ID has_key=$HAS_KEY key=$KEY_LEN"
       - name: MegaLinter
         uses: oxsecurity/megalinter/flavors/terraform@v10
         env:
