@@ -8,6 +8,9 @@ on:
         required: false
         default: false
         description: Lint the whole repository instead of the files changed by the pull request.
+    secrets:
+      GH_AUTOFIX_APP_PEM_FILE:
+        required: false
 
 concurrency:
   group: megalinter-${{ github.ref }}
