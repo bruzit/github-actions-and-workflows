@@ -122,11 +122,13 @@ jobs:
     name: MegaLinter
     uses: bruzit/github-actions-and-workflows/.github/workflows/megalinter.yaml@v0
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
 ```
 
-The caller grants `contents: write` for the push of the auto-fix commit to the pull request branch and `pull-requests: write` for MegaLinter's pull request comments, both with `GITHUB_TOKEN`; a called workflow's `GITHUB_TOKEN` cannot exceed the caller's permissions. The workflow needs no secrets.
+The caller grants `contents: read` for the checkout and `pull-requests: write` for MegaLinter's pull request comments, both with `GITHUB_TOKEN`; a called workflow's `GITHUB_TOKEN` cannot exceed the caller's permissions. Linters run without write credentials.
+
+Fixes are pushed as a GitHub App, because commits pushed with `GITHUB_TOKEN` trigger no workflows and would leave the pull request head without the required checks. Only after MegaLinter succeeds on a pull request from the same repository with applied fixes, the workflow creates an installation token for the calling repository with `contents: write`, commits `style: apply megalinter fixes` as the App and pushes it to the pull request branch; the push re-runs the checks. The job uses the `autofix` environment without creating deployments; its `GH_AUTOFIX_APP_ID` variable and `GH_AUTOFIX_APP_PEM_FILE` secret are provisioned by GitHub Organization as Code like the `release` environment above. The App needs only `Contents: write` and no ruleset bypass. Pull requests from forks and Dependabot get no secrets, so MegaLinter only reports their findings.
 
 Create `.mega-linter.yaml` listing the linters for the repository, for example:
 
@@ -156,7 +158,7 @@ jobs:
     name: MegaLinter
     uses: bruzit/github-actions-and-workflows/.github/workflows/megalinter.yaml@v0
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
     with:
       validate_all_codebase: true

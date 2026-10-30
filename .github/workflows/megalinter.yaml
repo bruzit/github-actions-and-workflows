@@ -17,14 +17,18 @@ jobs:
   megalinter:
     name: MegaLinter
     runs-on: ubuntu-latest
+    environment:
+      name: autofix
+      deployment: false
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
     steps:
-      - name: Checkout repository  # zizmor: ignore[artipacked] credentials are needed for the auto-commit push; this workflow uploads no artifacts
+      - name: Checkout repository
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          persist-credentials: false
           ref: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.head_ref || '' }}
       - name: MegaLinter
         uses: oxsecurity/megalinter/flavors/terraform@v10
@@ -39,11 +43,39 @@ jobs:
           SHOW_ELAPSED_TIME: true
           FLAVOR_SUGGESTIONS: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Commit applied fixes
+      - name: Check applied fixes
+        id: fixes
         if: github.event.pull_request.head.repo.full_name == github.repository
-        uses: stefanzweifel/git-auto-commit-action@v7
+        env:
+          HAS_APP_KEY: ${{ secrets.GH_AUTOFIX_APP_PEM_FILE != '' }}
+        run: |
+          if [ "$HAS_APP_KEY" = true ] && [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Create GitHub App token
+        id: app-token
+        if: steps.fixes.outputs.changed == 'true'
+        uses: actions/create-github-app-token@v3
         with:
-          commit_message: "style: apply megalinter fixes"
+          app-id: ${{ vars.GH_AUTOFIX_APP_ID }}
+          private-key: ${{ secrets.GH_AUTOFIX_APP_PEM_FILE }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+      - name: Push applied fixes
+        if: steps.fixes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          HEAD_REF: ${{ github.head_ref }}
+          GIT_CONFIG_COUNT: 1
+          GIT_CONFIG_KEY_0: credential.helper
+          GIT_CONFIG_VALUE_0: '!f() { echo username=x-access-token; echo "password=$GH_TOKEN"; }; f'
+        run: |
+          name="${APP_SLUG}[bot]"
+          email="$(gh api "/users/$name" --jq .id)+$name@users.noreply.github.com"
+          git add --all
+          git -c user.name="$name" -c user.email="$email" commit --message "style: apply megalinter fixes"
+          git push origin "HEAD:refs/heads/$HEAD_REF"
       - name: Gitleaks
         if: ${{ !cancelled() }}
         env:
