@@ -9,7 +9,7 @@ jobs:
     name: MegaLinter
     uses: ./.github/workflows/megalinter.yaml
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
 
   required:
