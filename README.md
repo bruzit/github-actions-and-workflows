@@ -1,6 +1,5 @@
 # GitHub Actions and Workflows
 
-
 Reusable GitHub Actions and workflows forming the CI baseline for every BruzIT repository: semantic-release versioning and MegaLinter linting.
 
 ## Features
