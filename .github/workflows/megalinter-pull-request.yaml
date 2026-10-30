@@ -8,6 +8,8 @@ jobs:
   megalinter:
     name: MegaLinter
     uses: ./.github/workflows/megalinter.yaml
+    secrets:
+      GH_AUTOFIX_APP_PEM_FILE: ${{ secrets.GH_AUTOFIX_APP_PEM_FILE }}
     permissions:
       contents: read
       pull-requests: write
