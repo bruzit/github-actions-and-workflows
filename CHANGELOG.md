@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13.3](https://github.com/bruzit/github-actions-and-workflows/compare/v0.13.2...v0.13.3) (2026-10-30)
+
+### Bug Fixes
+
+* push megalinter fixes with the autofix app token ([3ea9369](https://github.com/bruzit/github-actions-and-workflows/commit/3ea9369ddbaaba5a804e20c7dc7bde49fff65fdd))
+
 ## [0.13.2](https://github.com/bruzit/github-actions-and-workflows/compare/v0.13.1...v0.13.2) (2026-10-29)
 
 ### Bug Fixes
