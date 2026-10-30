@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13.4](https://github.com/bruzit/github-actions-and-workflows/compare/v0.13.3...v0.13.4) (2026-10-30)
+
+### Bug Fixes
+
+* pass the autofix app key to megalinter ([4d05796](https://github.com/bruzit/github-actions-and-workflows/commit/4d05796a54be9cf149491c56318ae52652f6c08a))
+
 ## [0.13.3](https://github.com/bruzit/github-actions-and-workflows/compare/v0.13.2...v0.13.3) (2026-10-30)
 
 ### Bug Fixes
