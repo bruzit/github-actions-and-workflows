@@ -1,23 +1,28 @@
 # GitHub Actions and Workflows
 
-Reusable GitHub Actions and workflows forming the CI baseline for every BruzIT repository: semantic-release versioning and MegaLinter linting.
+[![License](https://img.shields.io/github/license/bruzit/github-actions-and-workflows)](LICENSE)
+[![Last commit](https://img.shields.io/github/last-commit/bruzit/github-actions-and-workflows)](https://github.com/bruzit/github-actions-and-workflows/commits)
+[![MegaLinter](https://github.com/bruzit/github-actions-and-workflows/actions/workflows/megalinter-pull-request.yaml/badge.svg)](https://github.com/bruzit/github-actions-and-workflows/actions/workflows/megalinter-pull-request.yaml)
+
+Reusable GitHub Actions workflows forming the CI baseline for every BruzIT repository: semantic-release versioning and MegaLinter linting.
 
 ## Features
 
-- [Semantic Release Action](#semantic-release-composite-action)
-- [MegaLinter Workflow](#reusable-megalinter-workflow)
-
 ### Semantic Release Composite Action
 
-[Semantic Release composite action](semantic-release/action.yaml) using the Conventional Commits preset to automate versioning, tags with SemVer and major tag, generates [GitHub releases](https://github.com/bruzit/github-actions-and-workflows/releases), and updates the [CHANGELOG](CHANGELOG.md). It checks out the repository with the GitHub App token, so the changelog commit and the major tags are pushed as the GitHub App.
+[`semantic-release/action.yaml`](semantic-release/action.yaml) composite action using the Conventional Commits preset to automate versioning, tags with SemVer and major tag, generates [GitHub releases](../../releases), and updates [`CHANGELOG.md`](CHANGELOG.md). It checks out the repository with the GitHub App token, so the changelog commit and the major tags are pushed as the GitHub App.
 
 ### Reusable MegaLinter Workflow
 
-Reusable [MegaLinter workflow](.github/workflows/megalinter.yaml) linting pull requests with the `terraform` flavor, auto-committing fixable findings, then scanning the full git history for secrets with [gitleaks](https://github.com/gitleaks/gitleaks). Linters run with MegaLinter's default rules, except markdownlint, whose [`.markdownlint.yaml`](.markdownlint.yaml) applies markdownlint's default rules without line length, and zizmor, whose [`zizmor.yaml`](zizmor.yaml) allows tag-pinned actions.
+Reusable [`.github/workflows/megalinter.yaml`](.github/workflows/megalinter.yaml) workflow linting pull requests with the `terraform` flavor, auto-committing fixable findings, then scanning the full git history for secrets with gitleaks ([gitleaks/gitleaks GitHub repository](https://github.com/gitleaks/gitleaks)). Linters run with MegaLinter's default rules, except markdownlint, whose [`.markdownlint.yaml`](.markdownlint.yaml) applies markdownlint's default rules without line length, and zizmor, whose [`zizmor.yaml`](zizmor.yaml) allows tag-pinned actions.
+
+## Installation and Setup
+
+Nothing to install: callers reference the action and the workflow at `@v0`. Each needs a GitHub App, an environment and a caller workflow; see Usage.
 
 ## Usage
 
-The callers below are those of [bruzit/.github](https://github.com/bruzit/.github/tree/main/.github/workflows).
+The callers below are those of [bruzit/.github workflows](https://github.com/bruzit/.github/tree/main/.github/workflows).
 
 ### Use Semantic Release Action
 
@@ -55,7 +60,7 @@ The action checks out the repository itself. A local `uses: ./semantic-release` 
 
 The job needs no `GITHUB_TOKEN` permissions. The action releases with the GitHub App token only: it creates an installation token for the calling repository with `contents`, `issues` and `pull-requests` write, and uses it for the checkout, the changelog commit and tag pushes, the GitHub release, and the release comments on issues and pull requests. There is no `GITHUB_TOKEN` fallback; `app-id` and `app-private-key` are required.
 
-The `release` environment, its `GH_SEM_REL_APP_ID` variable and `GH_SEM_REL_APP_PEM_FILE` secret are provisioned by [GitHub Organization as Code](https://github.com/bruzit/github-organization-as-code) from [`bruzit.yaml`](https://github.com/bruzit/.github/blob/main/bruzit.yaml), not created by hand and not as repository variables or secrets. The organization environment is added to every repository, deployable from the default branch only, and the App bypasses the default-branch ruleset to push the changelog commit:
+The `release` environment, its `GH_SEM_REL_APP_ID` variable and `GH_SEM_REL_APP_PEM_FILE` secret are provisioned by [BruzIT GitHub Organization as Code](https://github.com/bruzit/github-organization-as-code) from [`bruzit.yaml` of bruzit/.github](https://github.com/bruzit/.github/blob/main/bruzit.yaml), not created by hand and not as repository variables or secrets. The organization environment is added to every repository, deployable from the default branch only, and the App bypasses the default-branch ruleset to push the changelog commit:
 
 ```yaml
 ---
@@ -74,7 +79,7 @@ organization:
         - 123456
 ```
 
-GitHub Organization as Code creates the secret with a placeholder value only; set the App's private key once per repository:
+BruzIT GitHub Organization as Code creates the secret with a placeholder value only; set the App's private key once per repository:
 
 ```shell
 gh secret set GH_SEM_REL_APP_PEM_FILE --env release --repo OWNER/REPOSITORY < private-key.pem
@@ -104,7 +109,7 @@ To create a GitHub App and a GitHub App Installation:
       - Install App
         - _your organization_: **Install**
 
-Configure Semantic Release in the repository, for example like this repository's [`.releaserc.yaml`](.releaserc.yaml).
+Configure semantic-release in the repository, for example like this repository's [`.releaserc.yaml`](.releaserc.yaml).
 
 ### Use MegaLinter Workflow
 
@@ -130,7 +135,7 @@ jobs:
 
 The caller grants `contents: read` for the checkout and `pull-requests: write` for MegaLinter's pull request comments, both with `GITHUB_TOKEN`; a called workflow's `GITHUB_TOKEN` cannot exceed the caller's permissions. Linters run without write credentials.
 
-Fixes are pushed as a GitHub App, because commits pushed with `GITHUB_TOKEN` trigger no workflows and would leave the pull request head without the required checks. Only after MegaLinter succeeds on a pull request from the same repository with applied fixes, the workflow creates an installation token for the calling repository with `contents: write`, commits `style: apply megalinter fixes` as the App and pushes it to the pull request branch; the push re-runs the checks. The job uses the `autofix` environment without creating deployments; its `GH_AUTOFIX_APP_ID` variable and `GH_AUTOFIX_APP_PEM_FILE` secret are provisioned by GitHub Organization as Code like the `release` environment above. The caller must pass the secret explicitly: a called workflow reads an environment secret only under a name its caller passes, and `secrets: inherit` fails zizmor. The App needs only `Contents: write` and no ruleset bypass. Pull requests from forks and Dependabot get no secrets, so MegaLinter only reports their findings.
+Fixes are pushed as a GitHub App, because commits pushed with `GITHUB_TOKEN` trigger no workflows and would leave the pull request head without the required checks. Only after MegaLinter succeeds on a pull request from the same repository with applied fixes, the workflow creates an installation token for the calling repository with `contents: write`, commits `style: apply megalinter fixes` as the App and pushes it to the pull request branch; the push re-runs the checks. The job uses the `autofix` environment without creating deployments; its `GH_AUTOFIX_APP_ID` variable and `GH_AUTOFIX_APP_PEM_FILE` secret are provisioned by BruzIT GitHub Organization as Code like the `release` environment above. The caller must pass the secret explicitly: a called workflow reads an environment secret only under a name its caller passes, and `secrets: inherit` fails zizmor. The App needs only `Contents: write` and no ruleset bypass. Pull requests from forks and Dependabot get no secrets, so MegaLinter only reports their findings.
 
 Create `.mega-linter.yaml` listing the linters for the repository, for example:
 
@@ -168,9 +173,15 @@ jobs:
 
 Fixes are not committed outside pull requests; findings fail the run.
 
-## Linting
+## Support
 
-This repository is linted by its own [MegaLinter workflow](.github/workflows/megalinter.yaml). Run locally (needs Docker):
+Community, best effort; [open a GitHub issue](../../issues).
+
+## Development
+
+### Linting
+
+This repository is linted by its own [`.github/workflows/megalinter.yaml`](.github/workflows/megalinter.yaml) workflow. Run locally (needs Docker):
 
 ```bash
 # report issues
@@ -180,7 +191,22 @@ docker run --rm -v "$PWD":/tmp/lint oxsecurity/megalinter-terraform:v10
 docker run --rm -e APPLY_FIXES=all -v "$PWD":/tmp/lint oxsecurity/megalinter-terraform:v10
 ```
 
-## Copyright and Licensing
+## Contributing
 
-[MIT License](LICENSE)  
+Open a pull request to `main`. Commits follow the [Conventional Commits 1.0.0 specification](https://www.conventionalcommits.org/en/v1.0.0/), from which semantic-release sets versions and the changelog automatically.
+
+## License and Copyright
+
+MIT License: [`LICENSE`](LICENSE)  
 Copyright © 2026 Martin Bružina
+
+## Stats
+
+| Metric           | Badges                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Commits          | [![Commits total](https://img.shields.io/github/commit-activity/t/bruzit/github-actions-and-workflows?label=commits%20total)](https://github.com/bruzit/github-actions-and-workflows/commits/main)                                                                                                                                                                                                                                                                                                                     |
+| Issues           | [![Issues open](https://img.shields.io/github/issues/bruzit/github-actions-and-workflows?label=issues)](https://github.com/bruzit/github-actions-and-workflows/issues) [![Issues total](https://img.shields.io/github/issues-search?query=repo%3Abruzit%2Fgithub-actions-and-workflows%20is%3Aissue&label=issues%20total)](https://github.com/bruzit/github-actions-and-workflows/issues?q=is%3Aissue)                                                                                                                 |
+| Pull requests    | [![Pull requests open, not draft](https://img.shields.io/github/issues-search?query=repo%3Abruzit%2Fgithub-actions-and-workflows%20is%3Apr%20is%3Aopen%20draft%3Afalse&label=PRs%20open)](https://github.com/bruzit/github-actions-and-workflows/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse) [![Pull requests total](https://img.shields.io/github/issues-search?query=repo%3Abruzit%2Fgithub-actions-and-workflows%20is%3Apr&label=PRs%20total)](https://github.com/bruzit/github-actions-and-workflows/pulls?q=is%3Apr) |
+| Checks on `main` | [![Checks on main](https://img.shields.io/github/check-runs/bruzit/github-actions-and-workflows/main?label=checks%20%28main%29)](https://github.com/bruzit/github-actions-and-workflows/actions?query=branch%3Amain)                                                                                                                                                                                                                                                                                                   |
+| Releases         | [![Latest release](https://img.shields.io/github/v/release/bruzit/github-actions-and-workflows)](https://github.com/bruzit/github-actions-and-workflows/releases/latest) [![Commits since latest release](https://img.shields.io/github/commits-since/bruzit/github-actions-and-workflows/latest)](https://github.com/bruzit/github-actions-and-workflows/releases)                                                                                                                                                    |
+| Community        | [![Stargazers](https://img.shields.io/github/stars/bruzit/github-actions-and-workflows)](https://github.com/bruzit/github-actions-and-workflows/stargazers) [![Forks](https://img.shields.io/github/forks/bruzit/github-actions-and-workflows)](https://github.com/bruzit/github-actions-and-workflows/forks) [![Contributors](https://img.shields.io/github/contributors/bruzit/github-actions-and-workflows)](https://github.com/bruzit/github-actions-and-workflows/graphs/contributors)                            |
