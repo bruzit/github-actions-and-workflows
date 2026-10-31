@@ -8,13 +8,8 @@ Reusable GitHub Actions workflows forming the CI baseline for every BruzIT repos
 
 ## Features
 
-### Semantic Release Composite Action
-
-[`semantic-release/action.yaml`](semantic-release/action.yaml) composite action using the Conventional Commits preset to automate versioning, tags with SemVer and major tag, generates [GitHub releases](../../releases), and updates [`CHANGELOG.md`](CHANGELOG.md). It checks out the repository with the GitHub App token, so the changelog commit and the major tags are pushed as the GitHub App.
-
-### Reusable MegaLinter Workflow
-
-Reusable [`.github/workflows/megalinter.yaml`](.github/workflows/megalinter.yaml) workflow linting pull requests with the `terraform` flavor, auto-committing fixable findings, then scanning the full git history for secrets with gitleaks ([gitleaks/gitleaks GitHub repository](https://github.com/gitleaks/gitleaks)). Linters run with MegaLinter's default rules, except markdownlint, whose [`.markdownlint.yaml`](.markdownlint.yaml) applies markdownlint's default rules without line length, and zizmor, whose [`zizmor.yaml`](zizmor.yaml) allows tag-pinned actions.
+- Semantic Release: [`semantic-release/action.yaml`](semantic-release/action.yaml) composite action; Conventional Commits preset; SemVer tags plus moving major tag (`v0`), [GitHub releases](../../releases) and [`CHANGELOG.md`](CHANGELOG.md), all pushed as a GitHub App.
+- MegaLinter: reusable [`.github/workflows/megalinter.yaml`](.github/workflows/megalinter.yaml) workflow; `terraform` flavor; fixes committed back to same-repository pull requests; gitleaks secret scan ([gitleaks/gitleaks GitHub repository](https://github.com/gitleaks/gitleaks)) of the pull request's commits, or the full history outside pull requests. MegaLinter's default rules, except [`.markdownlint.yaml`](.markdownlint.yaml) (no line length) and [`zizmor.yaml`](zizmor.yaml) (tag-pinned actions allowed).
 
 ## Installation and Setup
 
@@ -56,9 +51,7 @@ jobs:
 
 The optional `plugins` input takes a space-separated list of additional semantic-release plugins to install, e.g. `"@semantic-release/exec"`.
 
-The action checks out the repository itself. A local `uses: ./semantic-release` needs a prior `actions/checkout` with `persist-credentials: false`.
-
-The job needs no `GITHUB_TOKEN` permissions. The action releases with the GitHub App token only: it creates an installation token for the calling repository with `contents`, `issues` and `pull-requests` write, and uses it for the checkout, the changelog commit and tag pushes, the GitHub release, and the release comments on issues and pull requests. There is no `GITHUB_TOKEN` fallback; `app-id` and `app-private-key` are required.
+The job needs no `GITHUB_TOKEN` permissions: the action creates an installation token for the calling repository with `contents`, `issues` and `pull-requests` write and uses it for the checkout, the changelog commit, tag pushes, the GitHub release and release comments. No `GITHUB_TOKEN` fallback; `app-id` and `app-private-key` are required. A local `uses: ./semantic-release` needs a prior `actions/checkout` with `persist-credentials: false`.
 
 The `release` environment, its `GH_SEM_REL_APP_ID` variable and `GH_SEM_REL_APP_PEM_FILE` secret are provisioned by [BruzIT GitHub Organization as Code](https://github.com/bruzit/github-organization-as-code) from [`bruzit.yaml` of bruzit/.github](https://github.com/bruzit/.github/blob/main/bruzit.yaml), not created by hand and not as repository variables or secrets. The organization environment is added to every repository, deployable from the default branch only, and the App bypasses the default-branch ruleset to push the changelog commit:
 
@@ -85,29 +78,7 @@ BruzIT GitHub Organization as Code creates the secret with a placeholder value o
 gh secret set GH_SEM_REL_APP_PEM_FILE --env release --repo OWNER/REPOSITORY < private-key.pem
 ```
 
-To create a GitHub App and a GitHub App Installation:
-
-- GitHub
-  - _Organization_ / Settings / Developer settings / GitHub Apps
-    - **New GitHub App**
-      - Create GitHub App
-        - GitHub App name: _name_
-        - Description: _description_
-        - Homepage URL: _homepage URL_
-      - Webhook
-        - Active: off
-      - Permissions
-        - Repository permissions
-          - Contents: Read and write
-          - Issues: Read and write
-          - Pull requests: Read and write
-        - Where can this GitHub App be installed?: _choose what suits you best_
-      - **Create GitHub App**
-    - _your app_
-      - General
-        - **Generate a private key**
-      - Install App
-        - _your organization_: **Install**
+Create the GitHub App per [GitHub Docs: Registering a GitHub App](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app): webhook off; repository permissions Contents, Issues and Pull requests: Read and write; generate a private key; install it on the organization.
 
 Configure semantic-release in the repository, for example like this repository's [`.releaserc.yaml`](.releaserc.yaml).
 
@@ -131,11 +102,23 @@ jobs:
       pull-requests: write
     secrets:
       GH_AUTOFIX_APP_PEM_FILE: ${{ secrets.GH_AUTOFIX_APP_PEM_FILE }}
+
+  required:
+    name: Required (MegaLinter)
+    needs: [megalinter]
+    if: always()
+    runs-on: ubuntu-slim
+    permissions: {}
+    steps:
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
 ```
 
-The caller grants `contents: read` for the checkout and `pull-requests: write` for MegaLinter's pull request comments, both with `GITHUB_TOKEN`; a called workflow's `GITHUB_TOKEN` cannot exceed the caller's permissions. Linters run without write credentials.
+`Required (MegaLinter)` is the single status check to require in the ruleset.
 
-Fixes are pushed as a GitHub App, because commits pushed with `GITHUB_TOKEN` trigger no workflows and would leave the pull request head without the required checks. Only after MegaLinter succeeds on a pull request from the same repository with applied fixes, the workflow creates an installation token for the calling repository with `contents: write`, commits `style: apply megalinter fixes` as the App and pushes it to the pull request branch; the push re-runs the checks. The job uses the `autofix` environment without creating deployments; its `GH_AUTOFIX_APP_ID` variable and `GH_AUTOFIX_APP_PEM_FILE` secret are provisioned by BruzIT GitHub Organization as Code like the `release` environment above. The caller must pass the secret explicitly: a called workflow reads an environment secret only under a name its caller passes, and `secrets: inherit` fails zizmor. The App needs only `Contents: write` and no ruleset bypass. Pull requests from forks and Dependabot get no secrets, so MegaLinter only reports their findings.
+The caller grants `contents: read` for the checkout and `pull-requests: write` for MegaLinter's pull request comments, both with `GITHUB_TOKEN`; a called workflow's `GITHUB_TOKEN` cannot exceed the caller's permissions. Linters never get the App token.
+
+Fixes are pushed as a GitHub App, because commits pushed with `GITHUB_TOKEN` trigger no workflows and would leave the pull request head without the required checks. Only after MegaLinter succeeds on a pull request from the same repository with applied fixes, the workflow creates an installation token for the calling repository with `contents: write`, commits `style: apply megalinter fixes` as the App and pushes it to the pull request branch; the push re-runs the checks. The job uses the `autofix` environment without creating deployments; its `GH_AUTOFIX_APP_ID` variable and `GH_AUTOFIX_APP_PEM_FILE` secret are provisioned by BruzIT GitHub Organization as Code like the `release` environment above. The caller must pass the secret explicitly: a called workflow reads an environment secret only under a name its caller passes, and `secrets: inherit` fails zizmor. This App needs only Contents: Read and write and no ruleset bypass. Pull requests from forks and Dependabot get no secrets, so MegaLinter only reports their findings.
 
 Create `.mega-linter.yaml` listing the linters for the repository, for example:
 
