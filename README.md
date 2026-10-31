@@ -3,8 +3,9 @@
 [![License](https://img.shields.io/github/license/bruzit/github-actions-and-workflows)](LICENSE)
 [![Last commit](https://img.shields.io/github/last-commit/bruzit/github-actions-and-workflows)](https://github.com/bruzit/github-actions-and-workflows/commits)
 [![MegaLinter](https://github.com/bruzit/github-actions-and-workflows/actions/workflows/megalinter-pull-request.yaml/badge.svg)](https://github.com/bruzit/github-actions-and-workflows/actions/workflows/megalinter-pull-request.yaml)
+[![Semantic Release](https://github.com/bruzit/github-actions-and-workflows/actions/workflows/semantic-release.yaml/badge.svg)](https://github.com/bruzit/github-actions-and-workflows/actions/workflows/semantic-release.yaml)
 
-Reusable GitHub Actions workflows forming the CI baseline for every BruzIT repository: semantic-release versioning and MegaLinter linting.
+Reusable GitHub Actions and Workflows forming the CI baseline for every BruzIT repository: semantic-release versioning and MegaLinter linting.
 
 ## Features
 
