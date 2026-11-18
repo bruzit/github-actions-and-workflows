@@ -9,7 +9,7 @@ Reusable GitHub Actions and Workflows forming the CI baseline for every BruzIT r
 
 ## Features
 
-- Semantic Release: [`semantic-release/action.yaml`](semantic-release/action.yaml) composite action; Conventional Commits preset; SemVer tags plus moving major tag (`v0`), [GitHub releases](../../releases) and [`CHANGELOG.md`](CHANGELOG.md), all pushed as a GitHub App.
+- Semantic Release: [`semantic-release/action.yaml`](semantic-release/action.yaml) composite action; Conventional Commits preset; SemVer tags from `v0.0.0` on the root commit of an untagged repository plus moving major tag (`v0`), [GitHub releases](../../releases) and [`CHANGELOG.md`](CHANGELOG.md), all pushed as a GitHub App.
 - MegaLinter: reusable [`.github/workflows/megalinter.yaml`](.github/workflows/megalinter.yaml) workflow; `terraform` flavor; fixes committed back to same-repository pull requests; gitleaks secret scan ([gitleaks/gitleaks GitHub repository](https://github.com/gitleaks/gitleaks)) of the pull request's commits, or the full history outside pull requests. MegaLinter's default rules, except [`.markdownlint.yaml`](.markdownlint.yaml) (no line length) and [`zizmor.yaml`](zizmor.yaml) (tag-pinned actions allowed).
 
 ## Installation and Setup
