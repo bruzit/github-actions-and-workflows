@@ -1,6 +1,6 @@
 ---
 name: Semantic Release
-description: Run semantic-release with the Conventional Commits preset and move the major tags.
+description: Run semantic-release with the Conventional Commits preset, starting untagged repositories at v0.0.0, and move the major tags.
 inputs:
   app-id:
     required: true
@@ -46,6 +46,13 @@ runs:
         token: ${{ steps.gh-app-token.outputs.token }}
         fetch-depth: 0
         persist-credentials: true
+    - name: Bootstrap initial tag
+      shell: bash
+      run: |
+        [ -n "$(git tag --list 'v*.*.*' --merged HEAD)" ] && exit 0
+        root=$(git rev-list --max-parents=0 HEAD | tail -n 1)
+        git tag v0.0.0 "$root"
+        git push origin refs/tags/v0.0.0
     - name: Set up Node.js
       uses: actions/setup-node@v7
       with:
