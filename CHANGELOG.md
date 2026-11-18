@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.14.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.13.4...v0.14.0) (2026-11-18)
+
+### Features
+
+* **semantic-release:** bootstrap v0.0.0 tag on untagged repositories ([979070f](https://github.com/bruzit/github-actions-and-workflows/commit/979070f181797a351512d56ee0eaca6f4f8686d2))
+
 ## [0.13.4](https://github.com/bruzit/github-actions-and-workflows/compare/v0.13.3...v0.13.4) (2026-10-30)
 
 ### Bug Fixes
