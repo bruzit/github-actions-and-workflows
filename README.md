@@ -5,16 +5,17 @@
 [![MegaLinter](https://github.com/bruzit/github-actions-and-workflows/actions/workflows/megalinter-pull-request.yaml/badge.svg)](https://github.com/bruzit/github-actions-and-workflows/actions/workflows/megalinter-pull-request.yaml)
 [![Semantic Release](https://github.com/bruzit/github-actions-and-workflows/actions/workflows/semantic-release.yaml/badge.svg)](https://github.com/bruzit/github-actions-and-workflows/actions/workflows/semantic-release.yaml)
 
-Reusable GitHub Actions and Workflows forming the CI baseline for every BruzIT repository: semantic-release versioning and MegaLinter linting.
+Reusable GitHub Actions and Workflows forming the CI baseline for every BruzIT repository: semantic-release versioning, MegaLinter linting and Renovate dependency updates.
 
 ## Features
 
 - Semantic Release: [`semantic-release/action.yaml`](semantic-release/action.yaml) composite action with the Conventional Commits preset. It tags SemVer versions, from `v0.0.0` on the root commit of an untagged repository, moves the major tag (`v0`), and publishes [GitHub releases](../../releases) and [`CHANGELOG.md`](CHANGELOG.md), all pushed as a GitHub App.
 - MegaLinter: reusable [`.github/workflows/megalinter.yaml`](.github/workflows/megalinter.yaml) workflow with the `terraform` flavor. It commits fixes back to same-repository pull requests and runs a gitleaks secret scan ([gitleaks/gitleaks GitHub repository](https://github.com/gitleaks/gitleaks)) of the pull request's commits, or of the full history outside pull requests. It uses MegaLinter's default rules, except [`.markdownlint.yaml`](.markdownlint.yaml) (no line length) and [`zizmor.yaml`](zizmor.yaml) (tag-pinned actions allowed).
+- Renovate: reusable [`.github/workflows/renovate.yaml`](.github/workflows/renovate.yaml) workflow. It runs self-hosted Renovate ([renovatebot/github-action GitHub repository](https://github.com/renovatebot/github-action)) as a GitHub App on every repository of the calling organization.
 
 ## Installation and Setup
 
-Nothing to install: callers reference the action and the workflow at `@v0`. Each needs a GitHub App, an environment and a caller workflow; see Usage.
+Nothing to install: callers reference the action and the workflows at `@v0`. Each needs a GitHub App, an environment and a caller workflow; see Usage.
 
 ## Usage
 
@@ -156,6 +157,34 @@ jobs:
 ```
 
 Outside pull requests, the workflow commits no fixes; findings fail the run.
+
+### Use Renovate Workflow
+
+Create `.github/workflows/renovate.yaml` in the organization's `.github` repository:
+
+```yaml
+---
+name: Renovate
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  renovate:
+    name: Renovate
+    uses: bruzit/github-actions-and-workflows/.github/workflows/renovate.yaml@v0
+    permissions: {}
+    secrets:
+      GH_RENOVATE_APP_PEM_FILE: ${{ secrets.GH_RENOVATE_APP_PEM_FILE }}
+```
+
+The workflow creates an installation token for the whole organization and runs Renovate with `autodiscover` on every repository the App is installed on; `GITHUB_TOKEN` is unused. The job uses the `renovate` environment without creating deployments; its `GH_RENOVATE_APP_ID` variable and `GH_RENOVATE_APP_PEM_FILE` secret exist in the `.github` repository only. Runs of one organization are serialized.
+
+Create the GitHub App per [Renovate Docs: GitHub](https://docs.renovatebot.com/modules/platform/github/): webhook off; repository permissions Administration, Dependabot alerts and Metadata: Read, Checks, Commit statuses, Contents, Issues, Pull requests and Workflows: Read and write; organization permission Members: Read; generate a private key; install it on all repositories of the organization.
+
+Repositories without a Renovate configuration get an onboarding pull request, which extends the organization preset `renovate-config.json` of the `.github` repository when present ([Renovate Docs: Shareable Config Presets](https://docs.renovatebot.com/config-presets/)).
 
 ## Support
 

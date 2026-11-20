@@ -1,0 +1,43 @@
+---
+name: Renovate
+on:
+  workflow_call:
+    secrets:
+      GH_RENOVATE_APP_PEM_FILE:
+        required: true
+        description: Private key of the Renovate GitHub App.
+
+concurrency:
+  group: renovate-${{ github.repository_owner }}
+
+jobs:
+  renovate:
+    name: Renovate
+    runs-on: ubuntu-latest
+    environment:
+      name: renovate
+      deployment: false
+    permissions: {}
+    steps:
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ vars.GH_RENOVATE_APP_ID }}
+          private-key: ${{ secrets.GH_RENOVATE_APP_PEM_FILE }}
+          owner: ${{ github.repository_owner }} # zizmor: ignore[github-app]
+          permission-administration: read
+          permission-checks: write
+          permission-contents: write
+          permission-issues: write
+          permission-members: read
+          permission-pull-requests: write
+          permission-statuses: write
+          permission-vulnerability-alerts: read
+          permission-workflows: write
+      - name: Renovate
+        uses: renovatebot/github-action@v46.3.14
+        env:
+          RENOVATE_AUTODISCOVER: true
+        with:
+          token: ${{ steps.app-token.outputs.token }}
