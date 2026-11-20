@@ -9,8 +9,8 @@ Reusable GitHub Actions and Workflows forming the CI baseline for every BruzIT r
 
 ## Features
 
-- Semantic Release: [`semantic-release/action.yaml`](semantic-release/action.yaml) composite action; Conventional Commits preset; SemVer tags from `v0.0.0` on the root commit of an untagged repository plus moving major tag (`v0`), [GitHub releases](../../releases) and [`CHANGELOG.md`](CHANGELOG.md), all pushed as a GitHub App.
-- MegaLinter: reusable [`.github/workflows/megalinter.yaml`](.github/workflows/megalinter.yaml) workflow; `terraform` flavor; fixes committed back to same-repository pull requests; gitleaks secret scan ([gitleaks/gitleaks GitHub repository](https://github.com/gitleaks/gitleaks)) of the pull request's commits, or the full history outside pull requests. MegaLinter's default rules, except [`.markdownlint.yaml`](.markdownlint.yaml) (no line length) and [`zizmor.yaml`](zizmor.yaml) (tag-pinned actions allowed).
+- Semantic Release: [`semantic-release/action.yaml`](semantic-release/action.yaml) composite action with the Conventional Commits preset. It tags SemVer versions, from `v0.0.0` on the root commit of an untagged repository, moves the major tag (`v0`), and publishes [GitHub releases](../../releases) and [`CHANGELOG.md`](CHANGELOG.md), all pushed as a GitHub App.
+- MegaLinter: reusable [`.github/workflows/megalinter.yaml`](.github/workflows/megalinter.yaml) workflow with the `terraform` flavor. It commits fixes back to same-repository pull requests and runs a gitleaks secret scan ([gitleaks/gitleaks GitHub repository](https://github.com/gitleaks/gitleaks)) of the pull request's commits, or of the full history outside pull requests. It uses MegaLinter's default rules, except [`.markdownlint.yaml`](.markdownlint.yaml) (no line length) and [`zizmor.yaml`](zizmor.yaml) (tag-pinned actions allowed).
 
 ## Installation and Setup
 
@@ -18,7 +18,7 @@ Nothing to install: callers reference the action and the workflow at `@v0`. Each
 
 ## Usage
 
-The callers below are those of [bruzit/.github workflows](https://github.com/bruzit/.github/tree/main/.github/workflows).
+The callers below are the ones in [bruzit/.github workflows](https://github.com/bruzit/.github/tree/main/.github/workflows).
 
 ### Use Semantic Release Action
 
@@ -50,11 +50,11 @@ jobs:
           app-private-key: ${{ secrets.GH_SEM_REL_APP_PEM_FILE }}
 ```
 
-The optional `plugins` input takes a space-separated list of additional semantic-release plugins to install, e.g. `"@semantic-release/exec"`.
+To install additional semantic-release plugins, list them space-separated in the optional `plugins` input, e.g. `"@semantic-release/exec"`.
 
-The job needs no `GITHUB_TOKEN` permissions: the action creates an installation token for the calling repository with `contents`, `issues` and `pull-requests` write and uses it for the checkout, the changelog commit, tag pushes, the GitHub release and release comments. No `GITHUB_TOKEN` fallback; `app-id` and `app-private-key` are required. A local `uses: ./semantic-release` needs a prior `actions/checkout` with `persist-credentials: false`.
+The job needs no `GITHUB_TOKEN` permissions: the action creates an installation token for the calling repository with `contents`, `issues` and `pull-requests` write and uses it for the checkout, the changelog commit, tag pushes, the GitHub release and release comments. There's no `GITHUB_TOKEN` fallback: `app-id` and `app-private-key` are required. A local `uses: ./semantic-release` needs a prior `actions/checkout` with `persist-credentials: false`.
 
-The `release` environment, its `GH_SEM_REL_APP_ID` variable and `GH_SEM_REL_APP_PEM_FILE` secret are provisioned by [BruzIT GitHub Organization as Code](https://github.com/bruzit/github-organization-as-code) from [`bruzit.yaml` of bruzit/.github](https://github.com/bruzit/.github/blob/main/bruzit.yaml), not created by hand and not as repository variables or secrets. The organization environment is added to every repository, deployable from the default branch only, and the App bypasses the default-branch ruleset to push the changelog commit:
+[BruzIT GitHub Organization as Code](https://github.com/bruzit/github-organization-as-code) provisions the `release` environment, its `GH_SEM_REL_APP_ID` variable and `GH_SEM_REL_APP_PEM_FILE` secret from [`bruzit.yaml` of bruzit/.github](https://github.com/bruzit/.github/blob/main/bruzit.yaml); don't create them by hand or as repository variables or secrets. The organization environment is added to every repository and deployable from the default branch only; the App bypasses the default-branch ruleset to push the changelog commit:
 
 ```yaml
 ---
@@ -115,11 +115,11 @@ jobs:
         run: exit 1
 ```
 
-`Required (MegaLinter)` is the single status check to require in the ruleset.
+Require only `Required (MegaLinter)` in the ruleset.
 
 The caller grants `contents: read` for the checkout and `pull-requests: write` for MegaLinter's pull request comments, both with `GITHUB_TOKEN`; a called workflow's `GITHUB_TOKEN` cannot exceed the caller's permissions. Linters never get the App token.
 
-Fixes are pushed as a GitHub App, because commits pushed with `GITHUB_TOKEN` trigger no workflows and would leave the pull request head without the required checks. Only after MegaLinter succeeds on a pull request from the same repository with applied fixes, the workflow creates an installation token for the calling repository with `contents: write`, commits `style: apply megalinter fixes` as the App and pushes it to the pull request branch; the push re-runs the checks. The job uses the `autofix` environment without creating deployments; its `GH_AUTOFIX_APP_ID` variable and `GH_AUTOFIX_APP_PEM_FILE` secret are provisioned by BruzIT GitHub Organization as Code like the `release` environment above. The caller must pass the secret explicitly: a called workflow reads an environment secret only under a name its caller passes, and `secrets: inherit` fails zizmor. This App needs only Contents: Read and write and no ruleset bypass. Pull requests from forks and Dependabot get no secrets, so MegaLinter only reports their findings.
+The workflow pushes fixes as a GitHub App: commits pushed with `GITHUB_TOKEN` trigger no workflows and would leave the pull request head without the required checks. Only after MegaLinter succeeds with applied fixes on a pull request from the same repository, the workflow creates an installation token for the calling repository with `contents: write`, commits `style: apply megalinter fixes` as the App and pushes it to the pull request branch; the push re-runs the checks. The job uses the `autofix` environment without creating deployments; BruzIT GitHub Organization as Code provisions its `GH_AUTOFIX_APP_ID` variable and `GH_AUTOFIX_APP_PEM_FILE` secret like the `release` environment above. Pass the secret explicitly from the caller: a called workflow reads an environment secret only under a name its caller passes, and `secrets: inherit` fails zizmor. This App needs only Contents: Read and write and no ruleset bypass. Pull requests from forks and Dependabot get no secrets, so MegaLinter only reports their findings.
 
 Create `.mega-linter.yaml` listing the linters for the repository, for example:
 
@@ -155,17 +155,17 @@ jobs:
       validate_all_codebase: true
 ```
 
-Fixes are not committed outside pull requests; findings fail the run.
+Outside pull requests, the workflow commits no fixes; findings fail the run.
 
 ## Support
 
-Community, best effort; [open a GitHub issue](../../issues).
+[Open a GitHub issue](../../issues). I answer best effort, as a community project.
 
 ## Development
 
 ### Linting
 
-This repository is linted by its own [`.github/workflows/megalinter.yaml`](.github/workflows/megalinter.yaml) workflow. Run locally (needs Docker):
+This repository lints itself with its own [`.github/workflows/megalinter.yaml`](.github/workflows/megalinter.yaml) workflow. To run it locally (needs Docker):
 
 ```bash
 # report issues
@@ -177,7 +177,7 @@ docker run --rm -e APPLY_FIXES=all -v "$PWD":/tmp/lint oxsecurity/megalinter-ter
 
 ## Contributing
 
-Open a pull request to `main`. Commits follow the [Conventional Commits 1.0.0 specification](https://www.conventionalcommits.org/en/v1.0.0/), from which semantic-release sets versions and the changelog automatically.
+Open a pull request to `main`. Write commits per the [Conventional Commits 1.0.0 specification](https://www.conventionalcommits.org/en/v1.0.0/); semantic-release sets the version and changelog from them.
 
 ## License and Copyright
 
