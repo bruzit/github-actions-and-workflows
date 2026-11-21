@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.15.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.14.0...v0.15.0) (2026-11-21)
+
+### Features
+
+* add reusable renovate workflow ([2e685a6](https://github.com/bruzit/github-actions-and-workflows/commit/2e685a69b930620daa83ea80372f0bf9d9c81360))
+
 ## [0.14.0](https://github.com/bruzit/github-actions-and-workflows/compare/v0.13.4...v0.14.0) (2026-11-18)
 
 ### Features
